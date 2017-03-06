@@ -144,6 +144,7 @@ installDockerPackage() {
       installDockerPackage_applyFix25741
       installDockerPackage_installDocker
       installDockerPackage_installDockerCompose
+      installDockerPackage_setProxyConfig
       installDockerPackage_configureService
     fi;
 }
