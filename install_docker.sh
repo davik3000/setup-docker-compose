@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#set -x
+set -x
 
 # global settings
 CONFIG_DIR=.
@@ -13,7 +13,7 @@ DOCKER_REPO_SRC_PATH="${CONFIG_DIR}/docker.repo"
 DOCKER_REPO_DST_PATH="${YUM_REPO_DIR}/docker.repo"
 
 DOCKER_PROXY_CONF_SRC_PATH="${CONFIG_DIR}/http-proxy.conf"
-DOCKER_PROXY_CONF_DST_PATH="${DOCKER_SRV_DIR}/http-proxy.conf"
+DOCKER_PROXY_CONF_DST_PATH="${DOCKER_SERVICE_DIR}/http-proxy.conf"
 
 # Docker Compose version
 DC_VERSION="1.11.2"
@@ -71,7 +71,9 @@ installDockerPackage_applyFix25741() {
 installDockerPackage_setProxyConfig() {
     # DART fixing proxy conf missing in docker daemon, as found here
     # DART https://docs.docker.com/engine/admin/systemd/#http-proxy
-
+    echo "-----"
+    echo "Configure proxy for docker"
+    
     [ -d ${DOCKER_SERVICE_DIR} ] || sudo mkdir -p ${DOCKER_SERVICE_DIR}
 
     if [ -f ${DOCKER_PROXY_CONF_SRC_PATH} ] ; then
