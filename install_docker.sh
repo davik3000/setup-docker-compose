@@ -13,8 +13,11 @@ DC_VERSION="1.11.2"
 OS_NAME=$(uname -s)
 HW_ARCH=$(uname -m)
 
+DST_BIN_PATH="/usr/local/bin"
+
 DOCKER_COMPOSE_SRC_URL="https://github.com/docker/compose/releases/download/${DC_VERSION}/docker-compose-${OS_NAME}-${HW_ARCH}"
-DOCKER_COMPOSE_DST_PATH="/usr/local/bin/docker-compose"
+DOCKER_COMPOSE_DST_FILENAME="docker-compose"
+DOCKER_COMPOSE_DST_PATH="${DST_BIN_PATH}/${DOCKER_COMPOSE_DST_FILENAME}"
 
 #############
 # Functions #
@@ -66,7 +69,7 @@ function installDockerPackage_installDocker()
     # install engine
     echo "-----"
     echo "Installing docker engine"
-    yum -q -y install docker-engine
+    sudo yum -q -y install docker-engine
 
     # show installed version
     echo "> version installed:"
@@ -76,8 +79,11 @@ function installDockerPackage_installDocker()
     # install compose
     echo "-----"
     echo "Installing docker compose"
-    curl -L ${DOCKER_COMPOSE_SRC_URL} -o ${DOCKER_COMPOSE_DST_PATH}
-    chmod +x ${DOCKER_COMPOSE_DST_PATH}
+    echo " > downloading from URL: ${DOCKER_COMPOSE_SRC_URL}"
+    curl -L ${DOCKER_COMPOSE_SRC_URL} -o ${DOCKER_COMPOSE_DST_FILENAME}
+    echo " > installing into ${DST_BIN_PATH}"
+    sudo mv ${DOCKER_COMPOSE_DST_FILENAME} ${DOCKER_COMPOSE_DST_PATH}
+    sudo chmod a+x ${DOCKER_COMPOSE_DST_PATH}
 
     # configure docker
     echo "-----"
@@ -85,23 +91,23 @@ function installDockerPackage_installDocker()
 
     echo " > check the service and start the daemon"
     # enable the service
-    dockerEnabled=$(systemctl is-enabled docker.service)
+    dockerEnabled=$(sudo systemctl is-enabled docker.service)
     if [ ${dockerEnabled} == "disabled" ] ; then
         echo " >> enable docker.service"
-        systemctl enable docker.service
+        sudo systemctl enable docker.service
     else
         echo " >> docker.service already enabled"
     fi;
 
     # start the daemon
-    dockerActive=$(systemctl is-active docker)
+    dockerActive=$(sudo systemctl is-active docker)
     if [ ${dockerActive} == "inactive" ] ; then
         echo " >> start the daemon"
-        systemctl start docker
+        sudo systemctl start docker
     else
         echo " >> try to restart docker daemon"
-        systemctl daemon-reload
-        systemctl restart docker
+        sudo systemctl daemon-reload
+        sudo systemctl restart docker
     fi;
 }
 
